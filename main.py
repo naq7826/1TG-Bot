@@ -26,7 +26,8 @@ async def share(ctx, usr="", pw="", rank0="", rank1="", rank2=""):
 	embed.add_field(name="Username", value=usr, inline=True)
 	embed.add_field(name="Password", value=pw, inline=True)
 	embed.add_field(name="Rank", value=" ".join(rank), inline=True)
-	await ctx.send(embed=embed)
+	channel = client.get_channel(799916376537038888)
+	await channel.send(embed=embed)
 	await ctx.message.delete()
 
 @client.command()
