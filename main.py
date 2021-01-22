@@ -45,7 +45,7 @@ async def on_message(message):
 	
 
 @client.command()
-async def filterTroll(ctx, cmd="", word=""):
+async def filterTroll(ctx, cmd="", *word):
 	global flagTroll
 	global bad_words_troll
 	await ctx.message.delete()
@@ -53,42 +53,46 @@ async def filterTroll(ctx, cmd="", word=""):
 		await ctx.send(missingArgs, delete_after=3)
 	if discord.utils.get(ctx.message.author.roles, name="ADMIN") is None:
 		if flagTroll == 1:
-			await ctx.send(filterCmdNotAdmin1, delete_after=3)
+			await ctx.send(filterCmdNotAdmin1)
 		if flagTroll == 0:
-			await ctx.send(filterCmdNotAdmin0, delete_after=3)
+			await ctx.send(filterCmdNotAdmin0)
 	else:
 		if cmd == "on":
 			flagTroll = 1
 			with open("data/filteredTroll-words.txt", encoding="utf-8") as file:
 				bad_words_troll = [bad_word_troll.strip().lower() for bad_word_troll in file.readlines()[1:]]
-			await ctx.send(filterTrollOn, delete_after=3)
+			await ctx.send(filterTrollOn)
 		elif cmd == "off":
 			flagTroll = 0
-			await ctx.send(filterTrollOff, delete_after=3)
+			await ctx.send(filterTrollOff)
 		elif cmd == "add":
-			if word == "":
+			if len(word) == 0:
 				await ctx.send(missingArgs, delete_after=3)
 			if flagTroll == 0:
 				await ctx.send(turnOnFirst, delete_after=3)
 			else:
-				bad_words_troll.append(word)
 				openFile = open("data/filteredTroll-words.txt", mode="a", encoding="utf-8")
-				openFile.write("\n{}".format(word))
-				await ctx.send('Đã chặn từ "{}**"'.format(word[0]), delete_after=3)
+				for w in word:
+					bad_words_troll.append(w)
+					openFile.write("\n{}".format(w))
+				await ctx.send('Đã chặn từ "{}" :)'.format(" ".join(word)))
 		elif cmd == "delete":
-			if word == "":
+			f=0
+			if len(word) == 0:
 				await ctx.send(missingArgs, delete_after=3)
 			elif flagTroll == 0:
 				await ctx.send(turnOnFirst, delete_after=3)
 			else:
-				if word in bad_words_troll:
-					bad_words_troll.remove(word)
-					openFile = open("data/filteredTroll-words.txt", mode="a", encoding="utf-8")
-					openFile.truncate(0)
-					for bad in bad_words_troll:
-						openFile.write("\n{}".format(bad))
-					await ctx.send('Đã xoá từ "{}**"'.format(word[0]), delete_after=3)
-				else:
+				for w in word:
+					if w in bad_words_troll:
+						bad_words_troll.remove(w)
+						f=1
+				openFile = open("data/filteredTroll-words.txt", mode="a", encoding="utf-8")
+				openFile.truncate(0)
+				for bad in bad_words_troll:
+					openFile.write("\n{}".format(bad))
+				await ctx.send('Đã xoá từ "{}" :)'.format(" ".join(word)))
+				if f == 0:
 					await ctx.send(deleteNone, delete_after=3)
 		elif cmd == "help":
 			embed = discord.Embed(title=filterTitle, description=filterDesc, color=0xff5252)
@@ -111,7 +115,7 @@ async def filterTroll(ctx, cmd="", word=""):
 			await ctx.send(RECHECK_ARGS, delete_after=3)
 
 @client.command()
-async def filter(ctx, cmd="", word=""):
+async def filter(ctx, cmd="", *word):
 	global flag
 	global bad_words
 	await ctx.message.delete()
@@ -124,35 +128,39 @@ async def filter(ctx, cmd="", word=""):
 			flag = 1
 			with open("data/filtered-words.txt", encoding="utf-8") as file:
 				bad_words = [bad_word.strip().lower() for bad_word in file.readlines()[1:]]
-			await ctx.send(filterOn, delete_after=3)
+			await ctx.send(filterOn)
 		elif cmd == "off":
 			flag = 0
-			await ctx.send(filterOff, delete_after=3)
+			await ctx.send(filterOff)
 		elif cmd == "add":
-			if word == "":
+			if len(word) == 0:
 				await ctx.send(missingArgs, delete_after=3)
 			if flag == 0:
 				await ctx.send(turnOnFirst, delete_after=3)
 			else:
-				bad_words.append(word)
 				openFile = open("data/filtered-words.txt", mode="a", encoding="utf-8")
-				openFile.write("\n{}".format(word))
-				await ctx.send('Đã chặn từ "{}**"'.format(word[0]), delete_after=3)
+				for w in word:
+					bad_words.append(w)
+					openFile.write("\n{}".format(w))
+				await ctx.send('Đã chặn từ "{}**"'.format(word[0]))
 		elif cmd == "delete":
-			if word == "":
+			f=0
+			if len(word) == 0:
 				await ctx.send(missingArgs, delete_after=3)
 			if flag == 0:
 				await ctx.send(turnOnFirst, delete_after=3)
 			else:
-				if word in bad_words:
-					bad_words.remove(word)
-					openFile = open("data/filtered-words.txt", mode="a", encoding="utf-8")
-					openFile.truncate(0)
-					for bad in bad_words:
-						openFile.write("\n{}".format(bad))
-					await ctx.send('Đã xoá từ "{}**"'.format(word[0]), delete_after=3)
-				else:
-					await ctx.send(deleteNone, delete_after=3)
+				for w in word:
+					if w in bad_words:
+						bad_words.remove(w)
+						f=1
+				openFile = open("data/filtered-words.txt", mode="a", encoding="utf-8")
+				openFile.truncate(0)
+				for bad in bad_words:
+					openFile.write("\n{}".format(bad))
+				await ctx.send('Đã xoá từ "{}**"'.format(word[0]))
+			if f == 0:
+				await ctx.send(deleteNone, delete_after=3)
 		elif cmd == "help":
 			embed = discord.Embed(title=filterTitle, description=filterDesc, color=0xff5252)
 			embed.add_field(name="on/off", value=on_offVal, inline=True)
