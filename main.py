@@ -3,8 +3,8 @@ import os
 import asyncio
 from data.strings import *
 from discord.ext import commands
-#from dotenv import load_dotenv
-#load_dotenv(dotenv_path='.env')
+from dotenv import load_dotenv
+load_dotenv(dotenv_path='.env')
 
 client = discord.Client()
 client = commands.Bot(command_prefix='x!')
@@ -67,4 +67,4 @@ async def announce(ctx, mess):
   await ctx.send(embed=embed)
   await ctx.message.delete()
 
-client.run(os.getenv('TOKEN_TEST'))
+client.run(os.getenv('TOKEN'))
