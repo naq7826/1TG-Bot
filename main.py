@@ -47,9 +47,8 @@ async def on_message(message):
 
 @client.event
 async def on_raw_reaction_add(payload):
-	print(str(payload))
 	if payload.message_id == 802404871294025749 and str(payload.emoji) == "✅":
-		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Member")
+		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Members")
 		await payload.member.add_roles(Member)
 
 @client.event
@@ -57,7 +56,7 @@ async def on_raw_reaction_remove(payload):
 	if payload.message_id == 802404871294025749 and str(payload.emoji) == "✅":
 		guild = await client.fetch_guild(payload.guild_id)
 		user = await guild.fetch_member(payload.user_id)
-		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Member")
+		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Members")
 		await user.remove_roles(Member)
 		
 
