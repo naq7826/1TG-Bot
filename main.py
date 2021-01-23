@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path='.env')
 
 
-#Variables
+### Variables ###
 client = discord.Client()
 client = commands.Bot(command_prefix='!!')
 flagTroll = 0
@@ -15,6 +15,8 @@ flag = 0
 bad_words = []
 bad_words_troll = []
 
+
+### EVENTS HERE ###
 @client.event
 async def on_ready():
 	print('We have logged in as {0.user}'.format(client))
@@ -42,8 +44,25 @@ async def on_message(message):
 				await message.channel.send(embed=embed)
 				break
 	await client.process_commands(message)
-	
 
+@client.event
+async def on_raw_reaction_add(payload):
+	print(str(payload))
+	if payload.message_id == 802404871294025749 and str(payload.emoji) == "✅":
+		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Member")
+		await payload.member.add_roles(Member)
+
+@client.event
+async def on_raw_reaction_remove(payload):
+	if payload.message_id == 802404871294025749 and str(payload.emoji) == "✅":
+		guild = await client.fetch_guild(payload.guild_id)
+		user = await guild.fetch_member(payload.user_id)
+		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Member")
+		await user.remove_roles(Member)
+		
+
+
+### COMMANDS HERE ###
 @client.command()
 async def filterTroll(ctx, cmd="", *word):
 	global flagTroll
@@ -201,5 +220,13 @@ async def announce(ctx, *mess):
 	embed = discord.Embed(title=announceTitle, description=" ".join(mess), color=0xff5252)
 	embed.set_footer(text=footerCredit)
 	await ctx.send(embed=embed)
+
+@client.command()
+async def ruleEdit(ctx, *mess):
+	await ctx.message.delete()
+	embed = discord.Embed(title=announceTitle, description="ĐỌC KỸ NỘI QUY VÀ TICK ĐỒNG Ý ĐỂ THAM GIA SERVER\n\n".join(mess), color=0xff5252)
+	channel = client.get_channel(794369918429954058)
+	msg = await channel.fetch_message(802404871294025749)
+	await msg.edit(embed=embed)
 
 client.run(os.getenv('TOKEN'))
