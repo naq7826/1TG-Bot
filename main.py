@@ -20,10 +20,18 @@ bad_words_troll = []
 @client.event
 async def on_ready():
 	print('We have logged in as {0.user}'.format(client))
+	#channel = client.get_channel(802668401951768606)
+	#msg = await channel.fetch_message(802670938155647036)
+	#reaction = client.get_emoji(802668235010736168)
+	#await msg.add_reaction(reaction)
 	await client.change_presence(activity=discord.Game('made by Quanimus'))
 
 @client.event
 async def on_message(message):
+	if message.author == client.user:
+		return
+	if message.author.bot:
+		return
 	if message.author.id == 797491259793997854 and flagTroll == 1:  
 		message_content = message.content.lower().split()
 		message_joined = "".join(message_content)
@@ -47,17 +55,83 @@ async def on_message(message):
 
 @client.event
 async def on_raw_reaction_add(payload):
-	if payload.message_id == 802404871294025749 and str(payload.emoji) == "✅":
-		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Members")
-		await payload.member.add_roles(Member)
+	user = await client.fetch_user(payload.user_id)
+	if user == client.user:
+		return
+	if user.bot:
+		return
+	if payload.message_id == 802404871294025749:
+		if str(payload.emoji) == "✅":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Members")
+			await payload.member.add_roles(role)
+		else:
+			channel = client.get_channel(payload.channel_id)
+			message = await channel.fetch_message(payload.message_id)
+			user = await client.fetch_user(payload.user_id)
+			if payload.emoji.id is None:
+				await message.remove_reaction(payload.emoji.name, user)
+			else:
+				reaction = client.get_emoji(payload.emoji.id)
+				await message.remove_reaction(reaction, user)	
+	elif payload.message_id == 802670938155647036:
+		if str(payload.emoji) == "<:valorant:802666303298338876>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Valorant")
+			await payload.member.add_roles(role)
+	
+		elif str(payload.emoji) == "<:csgo:802666608568958978>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "CSGO")
+			await payload.member.add_roles(role)
+
+		elif str(payload.emoji) == "<:fo4:802667507638730813>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "FIFA Online 4")
+			await payload.member.add_roles(role)
+
+		elif str(payload.emoji) == "<:amongus:802667860919844914>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Among Us")
+			await payload.member.add_roles(role)
+
+		elif str(payload.emoji) == "<:ark:802668235010736168>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "ARK")
+			await payload.member.add_roles(role)
+		else:
+			channel = client.get_channel(payload.channel_id)
+			message = await channel.fetch_message(payload.message_id)
+			user = await client.fetch_user(payload.user_id)
+			if payload.emoji.id is None:
+				await message.remove_reaction(payload.emoji.name, user)
+			else:
+				reaction = client.get_emoji(payload.emoji.id)
+				await message.remove_reaction(reaction, user)	
 
 @client.event
 async def on_raw_reaction_remove(payload):
 	if payload.message_id == 802404871294025749 and str(payload.emoji) == "✅":
 		guild = await client.fetch_guild(payload.guild_id)
 		user = await guild.fetch_member(payload.user_id)
-		Member = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Members")
-		await user.remove_roles(Member)
+		role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Members")
+		await user.remove_roles(role)
+	elif payload.message_id == 802670938155647036:
+		guild = await client.fetch_guild(payload.guild_id)
+		user = await guild.fetch_member(payload.user_id)
+		if str(payload.emoji) == "<:valorant:802666303298338876>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Valorant")
+			await user.remove_roles(role)
+	
+		elif str(payload.emoji) == "<:csgo:802666608568958978>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "CSGO")
+			await user.remove_roles(role)
+
+		elif str(payload.emoji) == "<:fo4:802667507638730813>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "FIFA Online 4")
+			await user.remove_roles(role)
+
+		elif str(payload.emoji) == "<:amongus:802667860919844914>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Among Us")
+			await user.remove_roles(role)
+
+		elif str(payload.emoji) == "<:ark:802668235010736168>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "ARK")
+			await user.remove_roles(role)
 		
 
 
@@ -223,7 +297,9 @@ async def announce(ctx, *mess):
 @client.command()
 async def ruleEdit(ctx, *mess):
 	await ctx.message.delete()
-	embed = discord.Embed(title=announceTitle, description="ĐỌC KỸ NỘI QUY VÀ TICK ĐỒNG Ý ĐỂ THAM GIA SERVER\n\n".join(mess), color=0xff5252)
+	newmess = ["**ĐỌC KỸ NỘI QUY VÀ TICK ĐỒNG Ý ĐỂ THAM GIA SERVER**\n\n",mess[0]]
+	embed = discord.Embed(title=announceTitle, description="".join(newmess), color=0xff5252)
+	embed.set_footer(text=footerCredit)
 	channel = client.get_channel(794369918429954058)
 	msg = await channel.fetch_message(802404871294025749)
 	await msg.edit(embed=embed)
