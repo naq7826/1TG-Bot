@@ -234,7 +234,7 @@ async def filter(ctx, cmd="", *word):
 				for w in word:
 					bad_words.append(w)
 					openFile.write("\n{}".format(w))
-				await ctx.send('Đã chặn từ "{}**"'.format(word[0]))
+				await ctx.send('Đã chặn từ "{}**"'.format(word[0][0]))
 		elif cmd == "delete":
 			f=0
 			if len(word) == 0:
@@ -250,7 +250,7 @@ async def filter(ctx, cmd="", *word):
 				openFile.truncate(0)
 				for bad in bad_words:
 					openFile.write("\n{}".format(bad))
-				await ctx.send('Đã xoá từ "{}**"'.format(word[0]))
+				await ctx.send('Đã xoá từ "{}**"'.format(word[0][0]))
 			if f == 0:
 				await ctx.send(deleteNone, delete_after=3)
 		elif cmd == "help":
