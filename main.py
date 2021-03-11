@@ -22,7 +22,7 @@ async def on_ready():
 	print('We have logged in as {0.user}'.format(client))
 	#channel = client.get_channel(802668401951768606)
 	#msg = await channel.fetch_message(802670938155647036)
-	#reaction = client.get_emoji(802668235010736168)
+	#reaction = client.get_emoji(819675505841406022)
 	#await msg.add_reaction(reaction)
 	await client.change_presence(activity=discord.Game('made by Quanimus'))
 
@@ -55,6 +55,7 @@ async def on_message(message):
 
 @client.event
 async def on_raw_reaction_add(payload):
+	#print(payload.emoji)
 	user = await client.fetch_user(payload.user_id)
 	if user == client.user:
 		return
@@ -93,6 +94,11 @@ async def on_raw_reaction_add(payload):
 		elif str(payload.emoji) == "<:ark:802668235010736168>":
 			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "ARK")
 			await payload.member.add_roles(role)
+
+		elif str(payload.emoji) == "<:GenshinImpact:819675505841406022>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Genshin Impact")
+			await payload.member.add_roles(role)
+
 		else:
 			channel = client.get_channel(payload.channel_id)
 			message = await channel.fetch_message(payload.message_id)
@@ -132,7 +138,11 @@ async def on_raw_reaction_remove(payload):
 		elif str(payload.emoji) == "<:ark:802668235010736168>":
 			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "ARK")
 			await user.remove_roles(role)
-		
+
+		elif str(payload.emoji) == "<:GenshinImpact:819675505841406022>":
+			role = discord.utils.get(client.get_guild(payload.guild_id).roles, name = "Genshin Impact")
+			await user.remove_roles(role)
+
 
 
 ### COMMANDS HERE ###
@@ -143,7 +153,7 @@ async def filterTroll(ctx, cmd="", *word):
 	await ctx.message.delete()
 	if cmd == "":
 		await ctx.send(missingArgs, delete_after=3)
-	if discord.utils.get(ctx.message.author.roles, name="ADMIN") is None:
+	if discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
 		if flagTroll == 1:
 			await ctx.send(filterCmdNotAdmin1)
 		if flagTroll == 0:
@@ -213,7 +223,7 @@ async def filter(ctx, cmd="", *word):
 	await ctx.message.delete()
 	if cmd == "":
 		await ctx.send(missingArgs, delete_after=3)
-	if discord.utils.get(ctx.message.author.roles, name="ADMIN") is None:
+	if discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
 		await ctx.send(filterCmdNotAdmin0)
 	else:
 		if cmd == "on":
@@ -302,6 +312,30 @@ async def ruleEdit(ctx, *mess):
 	embed.set_footer(text=footerCredit)
 	channel = client.get_channel(794369918429954058)
 	msg = await channel.fetch_message(802404871294025749)
+	await msg.edit(embed=embed)
+
+@client.command()
+async def msgEdit(ctx, msgID, *mess):
+	await ctx.message.delete()
+	embed = discord.Embed(title=announceTitle, description=" ".join(mess), color=0xff5252)
+	embed.set_footer(text=footerCredit)
+	channel = ctx.channel
+	msg = await channel.fetch_message(msgID)
+	await msg.edit(embed=embed)
+
+@client.command()
+async def accEdit(ctx, msgID, usr="", pw="", *rank):
+	await ctx.message.delete()
+	if usr == "" or pw == "" or len(rank) == 0:
+		await ctx.send(missingArgs, delete_after=3)
+		return
+	embed = discord.Embed(title=shareTitle, description=shareDesc, color=0xff5252)
+	embed.add_field(name="Username", value=usr, inline=True)
+	embed.add_field(name="Password", value=pw, inline=True)
+	embed.add_field(name="Rank", value=" ".join(rank), inline=True)
+	embed.set_footer(text=footerCredit)
+	channel = client.get_channel(799916376537038888)
+	msg = await channel.fetch_message(msgID)
 	await msg.edit(embed=embed)
 
 client.run(os.getenv('TOKEN'))
