@@ -3,8 +3,8 @@ import os
 import asyncio
 from data.strings import *
 from discord.ext import commands
-from dotenv import load_dotenv
-load_dotenv(dotenv_path='.env')
+#from dotenv import load_dotenv
+#load_dotenv(dotenv_path='.env')
 
 
 ### Variables ###
@@ -14,11 +14,14 @@ flagTroll = 0
 flag = 0
 bad_words = []
 bad_words_troll = []
-
+banned_users = []
 
 ### EVENTS HERE ###
 @client.event
 async def on_ready():
+	global banned_users
+	with open("data/banned-users.txt", encoding="utf-8") as file:
+		banned_users = [user.strip().lower() for user in file.readlines()[1:]]
 	print('We have logged in as {0.user}'.format(client))
 	#channel = client.get_channel(802668401951768606)
 	#msg = await channel.fetch_message(802670938155647036)
@@ -28,12 +31,14 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+	print(message.author.id)
+	print(banned_users[0])
 	if message.author == client.user:
 		return
 	if message.author.bot:
 		return
+	message_content = message.content.lower().split()
 	if message.author.id == 797491259793997854 and flagTroll == 1:  
-		message_content = message.content.lower().split()
 		message_joined = "".join(message_content)
 		for bad_word_troll in bad_words_troll:
 			if bad_word_troll in message_joined :
@@ -43,7 +48,6 @@ async def on_message(message):
 				await message.channel.send(embed=embed)
 				break
 	if flag == 1:
-		message_content = message.content.lower().split()
 		for bad_word in bad_words:
 			if bad_word in message_content and "delete" not in message_content:
 				await message.delete()
@@ -51,6 +55,13 @@ async def on_message(message):
 				embed.set_footer(text=footerCredit)
 				await message.channel.send(embed=embed)
 				break
+	for user in banned_users:
+		if message.author.id == int(user):
+			await message.delete()
+			embed=discord.Embed(title=announceTitle, description=bannedDesc.format(message.author.mention), color=0xff5252)
+			embed.set_footer(text=footerCredit)
+			await message.channel.send(embed=embed)
+			break
 	await client.process_commands(message)
 
 @client.event
@@ -153,7 +164,7 @@ async def filterTroll(ctx, cmd="", *word):
 	await ctx.message.delete()
 	if cmd == "":
 		await ctx.send(missingArgs, delete_after=3)
-	if discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
+	elif discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
 		if flagTroll == 1:
 			await ctx.send(filterCmdNotAdmin1)
 		if flagTroll == 0:
@@ -223,7 +234,7 @@ async def filter(ctx, cmd="", *word):
 	await ctx.message.delete()
 	if cmd == "":
 		await ctx.send(missingArgs, delete_after=3)
-	if discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
+	elif discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
 		await ctx.send(filterCmdNotAdmin0)
 	else:
 		if cmd == "on":
@@ -280,6 +291,40 @@ async def filter(ctx, cmd="", *word):
 				embed=discord.Embed(title=warningTitle, description=warningDesc.format(msg.author.mention), color=0xff5252)
 				embed.set_footer(text=footerCredit)
 				await ctx.channel.send(embed=embed)
+		else:
+			await ctx.send(RECHECK_ARGS, delete_after=3)
+
+@client.command()
+async def ban(ctx, cmd="", userID=""):
+	global banned_users
+	await ctx.message.delete()
+	if cmd == "" or userID=="":
+		await ctx.send(missingArgs, delete_after=3)
+	elif discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
+		await ctx.send(filterCmdNotAdmin0)
+	else:
+		if cmd == "add":
+			if len(userID) == 0:
+				await ctx.send(missingArgs, delete_after=3)
+			else:
+				openFile = open("data/banned-users.txt", mode="a", encoding="utf-8")
+				banned_users.append(userID)
+				openFile.write("\n{}".format(userID))
+				await ctx.send('<@!{}> Khỏi chat nữa nha cđ ơi'.format(userID))
+		elif cmd == "delete":
+			if len(userID) == 0:
+				await ctx.send(missingArgs, delete_after=3)
+			else:
+				if userID in banned_users:
+					banned_users.remove(userID)
+					f=1
+					openFile = open("data/filtered-words.txt", mode="a", encoding="utf-8")
+					openFile.truncate(0)
+					for user in banned_users:
+						openFile.write("\n{}".format(user))
+					await ctx.send('Đã unban <@!{}>'.format(userID))
+				else:
+					await ctx.send(deleteNone2, delete_after=3)
 		else:
 			await ctx.send(RECHECK_ARGS, delete_after=3)
 

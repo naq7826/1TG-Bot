@@ -19,8 +19,10 @@ NO_MORE_CK = "Ck ck cái lozzzzz"
 RECHECK_ARGS = "Kiểm tra lại tham số vừa nhập, hoặc dùng '!!filter help' để được hướng dẫn"
 warningTitle = "CẢNH CÁO"
 warningDesc = "{} vừa dùng từ bị cấm, rút kinh nghiệm KHÔNG dùng nữa nhớ!"
+bannedDesc = "{} bị ban chat rồi cđ ơi :)"
 throwWrongID = "ID tin nhắn không tồn tại"
 deleteNone = 'Từ vừa nhập không tồn tại trong danh sách cấm!'
+deleteNone2 = 'Người dùng không tồn tại trong danh sách ban!'
 #Announce
 announceTitle = "THÔNG BÁO, THÔNG BÁO, ALO ALO ALOOO"
 
