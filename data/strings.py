@@ -23,6 +23,7 @@ bannedDesc = "{} bị ban chat rồi cđ ơi :)"
 throwWrongID = "ID tin nhắn không tồn tại"
 deleteNone = 'Từ vừa nhập không tồn tại trong danh sách cấm!'
 deleteNone2 = 'Người dùng không tồn tại trong danh sách ban!'
+
 #Announce
 announceTitle = "THÔNG BÁO, THÔNG BÁO, ALO ALO ALOOO"
 
@@ -30,3 +31,5 @@ announceTitle = "THÔNG BÁO, THÔNG BÁO, ALO ALO ALOOO"
 #General
 missingArgs = "Kiểm tra lại các thông tin!"
 footerCredit = "Made by Quanimus"
+editBy = "Edited by {}"
+sentBy = "Sent by {}"

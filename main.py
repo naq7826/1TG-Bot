@@ -3,8 +3,8 @@ import os
 import asyncio
 from data.strings import *
 from discord.ext import commands
-#from dotenv import load_dotenv
-#load_dotenv(dotenv_path='.env')
+from dotenv import load_dotenv
+load_dotenv(dotenv_path='.env')
 
 
 ### Variables ###
@@ -31,8 +31,6 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-	print(message.author.id)
-	print(banned_users[0])
 	if message.author == client.user:
 		return
 	if message.author.bot:
@@ -339,6 +337,7 @@ async def share(ctx, usr="", pw="", *rank):
 	embed.add_field(name="Password", value=pw, inline=True)
 	embed.add_field(name="Rank", value=" ".join(rank), inline=True)
 	embed.set_footer(text=footerCredit)
+	embed.set_author(name=sentBy.format(ctx.message.author.name))
 	channel = client.get_channel(799916376537038888)
 	await channel.send(embed=embed)	
 
@@ -347,6 +346,7 @@ async def announce(ctx, *mess):
 	await ctx.message.delete()
 	embed = discord.Embed(title=announceTitle, description=" ".join(mess), color=0xff5252)
 	embed.set_footer(text=footerCredit)
+	embed.set_author(name=sentBy.format(ctx.message.author.name))
 	await ctx.send(embed=embed)
 
 @client.command()
@@ -355,6 +355,7 @@ async def ruleEdit(ctx, *mess):
 	newmess = ["**ĐỌC KỸ NỘI QUY VÀ TICK ĐỒNG Ý ĐỂ THAM GIA SERVER**\n\n",mess[0]]
 	embed = discord.Embed(title=announceTitle, description="".join(newmess), color=0xff5252)
 	embed.set_footer(text=footerCredit)
+	embed.set_author(name=editBy.format(ctx.message.author.name))
 	channel = client.get_channel(794369918429954058)
 	msg = await channel.fetch_message(802404871294025749)
 	await msg.edit(embed=embed)
@@ -364,6 +365,7 @@ async def msgEdit(ctx, msgID, *mess):
 	await ctx.message.delete()
 	embed = discord.Embed(title=announceTitle, description=" ".join(mess), color=0xff5252)
 	embed.set_footer(text=footerCredit)
+	embed.set_author(name=editBy.format(ctx.message.author.name))
 	channel = ctx.channel
 	msg = await channel.fetch_message(msgID)
 	await msg.edit(embed=embed)
@@ -379,6 +381,7 @@ async def accEdit(ctx, msgID, usr="", pw="", *rank):
 	embed.add_field(name="Password", value=pw, inline=True)
 	embed.add_field(name="Rank", value=" ".join(rank), inline=True)
 	embed.set_footer(text=footerCredit)
+	embed.set_author(name=editBy.format(ctx.message.author.name))
 	channel = client.get_channel(799916376537038888)
 	msg = await channel.fetch_message(msgID)
 	await msg.edit(embed=embed)
