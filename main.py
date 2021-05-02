@@ -386,4 +386,40 @@ async def accEdit(ctx, msgID, usr="", pw="", *rank):
 	msg = await channel.fetch_message(msgID)
 	await msg.edit(embed=embed)
 
+@client.command()
+async def banVoice(ctx, user: discord.Member = None, day: int = 0):
+	await ctx.message.delete()
+	if user is None or day == 0:
+		await ctx.send(missingArgs, delete_after=3)
+	elif discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
+		await ctx.send(filterCmdNotAdmin0)
+	else:
+		day2 = day*24*60*60
+		embed = discord.Embed(title="Thông báo từ Admin", description=user.mention+" đã bị ban Voice Chat trong "+str(day)+" ngày.", color=0xff5252)
+		embed.set_footer(text=footerCredit)
+		role=discord.utils.get(ctx.guild.roles, name = "Banned Voice Chat")
+		await user.add_roles(role)
+		await ctx.send(embed=embed)
+		await asyncio.sleep(day2)
+		await user.remove_roles(role)
+		await ctx.message.delete()		
+
+@client.command()
+async def banStream(ctx, user: discord.Member = None, day: int = 0):
+	await ctx.message.delete()
+	if user is None or day == 0:
+		await ctx.send(missingArgs, delete_after=3)
+	elif discord.utils.get(ctx.message.author.roles, name="Administrators") is None and discord.utils.get(ctx.message.author.roles, name="OWNER") is None:
+		await ctx.send(filterCmdNotAdmin0)
+	else:
+		day2 = day*24*60*60
+		embed = discord.Embed(title="Thông báo từ Admin", description=user.mention+" đã bị ban Stream trong "+str(day)+" ngày.", color=0xff5252)
+		embed.set_footer(text=footerCredit)
+		role=discord.utils.get(ctx.guild.roles, name = "Banned Streaming")
+		await user.add_roles(role)
+		await ctx.send(embed=embed)
+		await asyncio.sleep(day2)
+		await user.remove_roles(role)
+		await ctx.message.delete()		
+
 client.run(os.getenv('TOKEN'))
